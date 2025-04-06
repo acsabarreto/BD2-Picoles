@@ -122,7 +122,7 @@ class Lote(DBModel):
     def __init__(self, **kwargs):
         self.id = kwargs['id']
         self.quantidade = kwargs['quantidade']
-        self.id_picole = kwargs['id_picole']
+        self.id_tipo_picole = kwargs['id_tipo_picole']
 
 class Revendedor(DBModel):
 
@@ -153,8 +153,7 @@ class NotaFiscal(DBModel):
 
     def __init__(self, **kwargs):
         self.id = kwargs['id']
-        self.data = kwargs['data']
         self.valor = kwargs['valor']
         self.numero_serie = kwargs['numero_serie']
         self.descricao = kwargs['descricao']
-        self.id_revendedor = kwargs['id_revendendor']
+        self.id_revendedor = kwargs['id_revendedor']
