@@ -1,5 +1,6 @@
+from typing import List
 from sqlalchemy import Table, Column, String, Numeric, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column,relationship
 from datetime import date
 from db import DBModel
 
@@ -38,7 +39,6 @@ class AditivoNutritivo(DBModel):
     formula_quimica:Mapped[str] = mapped_column(String(45), nullable= False)
 
     def __init__(self, **kwargs):
-        self.id = kwargs['id']
         self.nome = kwargs['nome']
         self.formula_quimica = kwargs['formula_quimica']
 
@@ -50,7 +50,6 @@ class Sabor(DBModel):
     nome:Mapped[str] = mapped_column(String(45), nullable=False)
 
     def __init__(self, **kwargs):
-        self.id = kwargs['id']
         self.nome = kwargs['nome']
 
 class TipoEmbalagem(DBModel):
@@ -61,7 +60,6 @@ class TipoEmbalagem(DBModel):
     nome:Mapped[str] = mapped_column(String(45), nullable=False)
 
     def __init__(self, **kwargs):
-        self.id = kwargs['id']
         self.nome = kwargs['nome']
 
 class TipoPicole(DBModel):
@@ -72,8 +70,31 @@ class TipoPicole(DBModel):
     nome:Mapped[str] = mapped_column(String(45), nullable=False)
 
     def __init__(self, **kwargs):
-        self.id = kwargs['id']
         self.nome = kwargs['nome']
+
+
+class Ingrediente(DBModel):
+
+    __tablename__ = 'ingredientes'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    nome:Mapped[str] = mapped_column(String(45), nullable=False)
+
+    def __init__(self, **kwargs):
+        self.nome = kwargs['nome']
+
+
+class Conservante(DBModel):
+
+    __tablename__ = 'conservantes'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    nome:Mapped[str] = mapped_column(String(45), nullable=False)
+    descricao:Mapped[str] = mapped_column(String(45), nullable=False)
+
+    def __init__(self, **kwargs):
+        self.nome = kwargs['nome']
+        self.descricao = kwargs['descricao']
 
 class Picole(DBModel):
 
@@ -86,29 +107,9 @@ class Picole(DBModel):
     id_tipo_embalagem:Mapped[int] = mapped_column(ForeignKey('tipos_embalagem.id'))
     id_tipo_picole:Mapped[int] = mapped_column(ForeignKey('tipos_picole.id'))
 
-class Ingrediente(DBModel):
-
-    __tablename__ = 'ingredientes'
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    nome:Mapped[str] = mapped_column(String(45), nullable=False)
-
-    def __init__(self, **kwargs):
-        self.id = kwargs['id']
-        self.nome = kwargs['nome']
-
-class Conservante(DBModel):
-
-    __tablename__ = 'conservantes'
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    nome:Mapped[str] = mapped_column(String(45), nullable=False)
-    descricao:Mapped[str] = mapped_column(String(45), nullable=False)
-
-    def __init__(self, **kwargs):
-        self.id = kwargs['id']
-        self.nome = kwargs['nome']
-        self.descricao = kwargs['descricao']
+    ingredientes: Mapped[List[Ingrediente]] = relationship(secondary=ingredientes_picoles)
+    conservantes:Mapped[List[Conservante]] = relationship(secondary=conservantes_picoles)
+    aditivos_nutritivos:Mapped[List[AditivoNutritivo]] = relationship(secondary=aditivos_nutritivos_picole)
 
 class Lote(DBModel):
 
@@ -120,7 +121,6 @@ class Lote(DBModel):
     
 
     def __init__(self, **kwargs):
-        self.id = kwargs['id']
         self.quantidade = kwargs['quantidade']
         self.id_tipo_picole = kwargs['id_tipo_picole']
 
@@ -135,7 +135,6 @@ class Revendedor(DBModel):
 
 
     def __init__(self, **kwargs):
-        self.id = kwargs['id']
         self.cnpj = kwargs['cnpj']
         self.razao_social = kwargs['razao_social']
         self.contato = kwargs['contato']
@@ -152,7 +151,6 @@ class NotaFiscal(DBModel):
     id_revendedor:Mapped[int] = mapped_column(ForeignKey('revendedores.id'))
 
     def __init__(self, **kwargs):
-        self.id = kwargs['id']
         self.valor = kwargs['valor']
         self.numero_serie = kwargs['numero_serie']
         self.descricao = kwargs['descricao']
